@@ -20,11 +20,14 @@ The goals / steps of this project are the following:
 [undistort_output]: ./examples/undistort_output.png "Undistorted Output"
 [original]: ./examples/original.png "Original Image"
 [undistorted]: ./examples/undistorted.png "Undistorted"
+[yellow_and_white_selected]: ./examples/yellow_and_white_selected.png "Yellow and white colors selected"
 [color_gradient_combined]: ./examples/color_gradient_combined.png "Color Gradient Combined"
 [warped]: ./examples/warped.png "Warped"
 [slide_windows]: ./examples/slide_windows.png "Slide Windows"
 [reuse_fit]: ./examples/reuse_fit.png "Reuse existing fit"
 [final]: ./examples/final.png "Final Image"
+[black_right_line]: ./examples/black_right_line.png "Black right line"
+[black_right_line_yellow_and_white]: ./examples/black_right_line_yellow_and_white.png "Yellow and white extracted from black lane line"
 
 ### Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
 
@@ -62,7 +65,11 @@ Applying the cal_undistort() function describe above, I get the following undist
 
 #### 2. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
 
-I used a combination of color and gradient thresholds to generate a binary image (see `combine_color_and_gradient()` function in the notebook).  Here's an example of my output for this step. (The four colored points on the image are actually the source points used in the perspective transformation described below)
+I first filtered the image to keep only yellow and white colors (as the lines are expected to have one of the two colors), to make sure that the shadows and other noises will have limited influence on the result. Following is an example of yellow and white image.
+
+![alt text][yellow_and_white_selected]
+
+I then used a combination of color and gradient thresholds to generate a binary image (see `combine_color_and_gradient()` function in the notebook).  Here's an example of my output for this step. (The four colored points on the image are actually the source points used in the perspective transformation described below)
 
 ![alt text][color_gradient_combined]
 
@@ -144,13 +151,19 @@ Here's a [link to my video result](./project_video_output.mp4)
 
 The described pipeline worked fine on most of the project video, with some wobbly lines in few sections of the video. I should try to fine tune the sanity checks and usage of the results on previous images to make it smoother.
 
-The result on the chanllenge video is catastrophic. You can see it in [challenge_video_output.mp4](./challenge_video_output.mp4)
- 
- 1. Sometimes the shadow line in the midle of the road is detected as the ritht lane line. I think that this can be fixed by 
- 2. The found lines are not even parallel under the bridge
+Adding yellow and white filter to the process enhanced the result on the project video, but the results are still bad for the challenge video, because some lines there are black.
+See for example right line in the the following image:
+
+![alt text][black_right_line]
+
+Applying yellow filter results in the following
+
+![alt text][black_right_line_yellow_and_white]
+
+As you can see the right line is lost.
 
 So in the nex iteration, I plan to do try following
  
  1. Add images from challenge video to my test images
- 2. Improve the color and gradient combination to be able to distinguish the lines under shadow
+ 2. Improve the color and gradient combination to be able to distinguish the lines under shadow, whithout loosing lines which are not yellow or whiete (black lines for example)
  3. Restrict the range of the histogram where the peaks are choosen in the `slide_windows_and_fit_polynomials()` function to try ignoring noisy lines.
